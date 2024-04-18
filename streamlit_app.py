@@ -5,51 +5,53 @@ from PIL import Image
 import io
 import configparser
 
-# Charger les configurations à partir du fichier config.ini
+# Load the configuration from a config.ini file
 config = configparser.ConfigParser()
 config.read('config.ini')
 
-# Essayer d'obtenir le token API depuis le fichier de configuration
+# Attempt to retrieve the Hugging Face API token from the configuration file
 hf_token = config.get('DEFAULT', 'HUGGINGFACE_TOKEN', fallback=None)
 if not hf_token:
-    st.error("S'il vous plaît configurez votre token API dans le fichier 'config.ini' sous la section [DEFAULT] avec la clé HUGGINGFACE_TOKEN.")
+    st.error("Please configure your Hugging Face API token in the 'config.ini' file under the [DEFAULT] section with the HUGGINGFACE_TOKEN key.")
     st.stop()
 
-st.title("Générateur d'Images à partir de Texte - Utilisation des Modèles Hugging Face")
-text_input = st.text_input("Entrez le prompt que vous souhaitez transformer en image:", "")
+# Setup the title and input box on the Streamlit UI
+st.title("Image Generator from Text - Using Hugging Face Models")
+text_input = st.text_input("Enter the text prompt you wish to transform into an image:", "")
 
+# Only proceed if the user has entered some text
 if text_input:
     try:
-        # Vérifie si CUDA est disponible et l'utilise sinon utilise CPU
+        # Check if CUDA is available and utilize it; otherwise, use the CPU
         device = "cuda" if torch.cuda.is_available() else "cpu"
         
-        # Charge le modèle en utilisant le token pour l'authentification
+        # Correctly load the pipeline by passing keyword arguments
         pipeline = AutoPipelineForText2Image.from_pretrained(
-            "logo-wizard/logo-diffusion-checkpoint", 
-            "CompVis/stable-diffusion-v1-4",
+            model_id="CompVis/stable-diffusion-v1-4",  # Changed to keyword argument for clarity
+            revision="fp16",                          # Example revision (use appropriate one)
             torch_dtype=torch.float16
         ).to(device)
         
-        # Définit un générateur de nombres aléatoires pour la reproductibilité
+        # Set a manual seed for reproducibility
         generator = torch.Generator(device).manual_seed(42)
 
-        # Génère l'image
-        with st.spinner("Génération de l'image en cours..."):
+        # Generate the image based on the user's text input
+        with st.spinner("Generating the image..."):
             image = pipeline(text_input, generator=generator).images[0]
 
-        # Prépare l'image pour l'affichage et le téléchargement
+        # Prepare the image for display and download
         img_buffer = io.BytesIO()
         image.save(img_buffer, format="JPEG")
         img_buffer.seek(0)
 
-        st.image(img_buffer, caption="Image générée")
+        st.image(img_buffer, caption="Generated Image")
         st.download_button(
-            "Télécharger l'image",
+            "Download the image",
             img_buffer,
-            "image_generee.jpg",
+            "generated_image.jpg",
             "image/jpeg"
         )
 
     except Exception as e:
-        st.error(f"Une erreur est survenue: {str(e)}")
+        st.error(f"An error occurred: {str(e)}")
 
