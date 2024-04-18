@@ -26,7 +26,7 @@ if text_input:
         # Charge le modèle en utilisant le token pour l'authentification
         pipeline = AutoPipelineForText2Image.from_pretrained(
             "logo-wizard/logo-diffusion-checkpoint", 
-            use_auth_token=hf_token,
+            "CompVis/stable-diffusion-v1-4",
             torch_dtype=torch.float16
         ).to(device)
         
