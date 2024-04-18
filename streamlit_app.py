@@ -5,7 +5,7 @@ from PIL import Image
 import io
 import configparser
 
-# Load the configuration from a config.ini file
+# Load configuration from a config.ini file
 config = configparser.ConfigParser()
 config.read('config.ini')
 
@@ -15,24 +15,23 @@ if not hf_token:
     st.error("Please configure your Hugging Face API token in the 'config.ini' file under the [DEFAULT] section with the HUGGINGFACE_TOKEN key.")
     st.stop()
 
-# Setup the title and input box on the Streamlit UI
 st.title("Image Generator from Text - Using Hugging Face Models")
 text_input = st.text_input("Enter the text prompt you wish to transform into an image:", "")
 
-# Only proceed if the user has entered some text
 if text_input:
     try:
-        # Check if CUDA is available and utilize it; otherwise, use the CPU
+        # Determine if CUDA is available and use it; otherwise, use the CPU
         device = "cuda" if torch.cuda.is_available() else "cpu"
         
-        # Correctly load the pipeline by passing keyword arguments
+        # Correctly load the pipeline by providing the required positional argument and any optional settings as keyword arguments
         pipeline = AutoPipelineForText2Image.from_pretrained(
-            model_id="CompVis/stable-diffusion-v1-4",  # Changed to keyword argument for clarity
-            revision="fp16",                          # Example revision (use appropriate one)
-            torch_dtype=torch.float16
+            "CompVis/stable-diffusion-v1-4",  # This is the required positional argument
+            torch_dtype=torch.float16,       # Optional settings as keyword arguments
+            revision="fp16",                 # Example of another optional keyword argument
+            use_auth_token=hf_token          # Authentication token if required
         ).to(device)
         
-        # Set a manual seed for reproducibility
+        # Setting a manual seed for reproducibility
         generator = torch.Generator(device).manual_seed(42)
 
         # Generate the image based on the user's text input
