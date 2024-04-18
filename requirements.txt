@@ -1,7 +1,4 @@
 diffusers
 torch
-torchvision
 transformers
-accelerate
 huggingface_hub
-pyngrok
