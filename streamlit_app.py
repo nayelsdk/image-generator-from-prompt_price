@@ -15,7 +15,7 @@ if not hf_token:
     st.error("Please configure your Hugging Face API token in the 'config.ini' file under the [DEFAULT] section with the HUGGINGFACE_TOKEN key.")
     st.stop()
 
-st.title("Image Generator from Text - Using Hugging Face Models")
+st.title("Image Generator from Text")
 text_input = st.text_input("Enter the text prompt you wish to transform into an image:", "")
 
 if text_input:
