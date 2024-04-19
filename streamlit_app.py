@@ -21,12 +21,10 @@ text_input = st.text_input("Enter the text prompt you wish to transform into an 
 if text_input:
     try:
         # Determine if CUDA is available and use it; otherwise, use the CPU
-        device = "cuda" if torch.cuda.is_available() else "cpu"
-        
+        device = "cuda" if torch.cuda.is_available() else "cpu"  
         # Correctly load the pipeline by providing the required positional argument and any optional settings as keyword arguments
         pipeline = AutoPipelineForText2Image.from_pretrained(
             "CompVis/stable-diffusion-v1-4",  # This is the required positional argument
-            torch_dtype=torch.float16,       # Optional settings as keyword arguments
             revision="fp16",                 # Example of another optional keyword argument
             use_auth_token=hf_token          # Authentication token if required
         ).to(device)
