@@ -25,7 +25,7 @@ if text_input:
         # Correctly load the pipeline by providing the required positional argument and any optional settings as keyword arguments
         pipeline = AutoPipelineForText2Image.from_pretrained(
             "CompVis/stable-diffusion-v1-4",  # This is the required positional argument
-            revision="fp16",                 # Example of another optional keyword argument
+            variant="fp16",                 # Example of another optional keyword argument
             use_auth_token=hf_token          # Authentication token if required
         ).to(device)
         
@@ -33,7 +33,7 @@ if text_input:
         generator = torch.Generator(device).manual_seed(42)
 
         # Generate the image based on the user's text input
-        with st.spinner("Generating the image..."):
+        with st.spinner("Generation de  l'image..."):
             image = pipeline(text_input, generator=generator).images[0]
 
         # Prepare the image for display and download
